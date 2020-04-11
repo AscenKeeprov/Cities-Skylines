@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Localizer.Utils;
+using System;
 using System.Windows.Forms;
 
 namespace Localizer
@@ -12,7 +13,13 @@ namespace Localizer
 
 		private void Main_Load(object sender, EventArgs eventArgs)
 		{
+			Logger.Clear();
+			Logger.Log("Loading main form");
+		}
 
+		private void Main_FormClosing(object sender, FormClosingEventArgs eventArgs)
+		{
+			Logger.Log("Closing main form");
 		}
 	}
 }
