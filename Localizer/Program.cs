@@ -10,7 +10,9 @@ namespace Localizer
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			LocalizerContext appContext = new LocalizerContext(new Main());
+			Form mainForm = new Form_InstallPathSelect();
+			mainForm.Show();
+			LocalizerContext appContext = new LocalizerContext();
 			Application.Run(appContext);
 		}
 	}

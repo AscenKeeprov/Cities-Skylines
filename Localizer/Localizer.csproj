@@ -67,18 +67,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\Main.cs">
+    <Compile Include="Forms\Form_LocaleSelect.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="Forms\Form_LocaleSelect.Designer.cs">
+      <DependentUpon>Form_LocaleSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Form_InstallPathSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Form_InstallPathSelect.Designer.cs">
+      <DependentUpon>Form_InstallPathSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="LocalizerContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Logger.cs" />
-    <EmbeddedResource Include="Forms\Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Form_LocaleSelect.resx">
+      <DependentUpon>Form_LocaleSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Form_InstallPathSelect.resx">
+      <DependentUpon>Form_InstallPathSelect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

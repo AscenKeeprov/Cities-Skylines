@@ -6,7 +6,7 @@ namespace Localizer
 {
 	public class LocalizerContext : ApplicationContext
 	{
-		public LocalizerContext(Form mainForm) : base(mainForm)
+		public LocalizerContext() : base()
 		{
 			Application.ApplicationExit += new EventHandler(OnApplicationExit);
 		}
