@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Localizer
+namespace Localizer.Core
 {
 	public class LocalizerContext : ApplicationContext
 	{
