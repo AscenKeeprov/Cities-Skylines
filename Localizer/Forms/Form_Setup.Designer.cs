@@ -32,18 +32,19 @@
 			this.TextBox_InstallPath = new System.Windows.Forms.TextBox();
 			this.Label_InstallPathTextBox = new System.Windows.Forms.Label();
 			this.Button_InstallPathBrowse = new System.Windows.Forms.Button();
-			this.Button_InstallPathNext = new System.Windows.Forms.Button();
+			this.Button_Start = new System.Windows.Forms.Button();
 			this.RadioButton_OperationCreate = new System.Windows.Forms.RadioButton();
 			this.GroupBox_ActionRadioButtons = new System.Windows.Forms.GroupBox();
 			this.RadioButton_OperationEdit = new System.Windows.Forms.RadioButton();
 			this.ComboBox_Language = new System.Windows.Forms.ComboBox();
 			this.Label_LanguageComboBox = new System.Windows.Forms.Label();
+			this.CheckBox_CompareToEN = new System.Windows.Forms.CheckBox();
 			this.GroupBox_ActionRadioButtons.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TextBox_InstallPath
 			// 
-			this.TextBox_InstallPath.BackColor = System.Drawing.Color.Ivory;
+			this.TextBox_InstallPath.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(245)))));
 			this.TextBox_InstallPath.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.TextBox_InstallPath.Location = new System.Drawing.Point(16, 48);
 			this.TextBox_InstallPath.Margin = new System.Windows.Forms.Padding(4);
@@ -67,26 +68,37 @@
 			// 
 			// Button_InstallPathBrowse
 			// 
+			this.Button_InstallPathBrowse.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(152)))), ((int)(((byte)(152)))));
+			this.Button_InstallPathBrowse.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.Button_InstallPathBrowse.Location = new System.Drawing.Point(400, 48);
 			this.Button_InstallPathBrowse.Margin = new System.Windows.Forms.Padding(4);
 			this.Button_InstallPathBrowse.Name = "Button_InstallPathBrowse";
-			this.Button_InstallPathBrowse.Size = new System.Drawing.Size(80, 24);
+			this.Button_InstallPathBrowse.Size = new System.Drawing.Size(80, 25);
 			this.Button_InstallPathBrowse.TabIndex = 2;
 			this.Button_InstallPathBrowse.Text = "Browse...";
-			this.Button_InstallPathBrowse.UseVisualStyleBackColor = true;
+			this.Button_InstallPathBrowse.UseVisualStyleBackColor = false;
 			this.Button_InstallPathBrowse.Click += new System.EventHandler(this.Button_InstallPathBrowse_Click);
+			this.Button_InstallPathBrowse.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+			this.Button_InstallPathBrowse.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+			this.Button_InstallPathBrowse.MouseHover += new System.EventHandler(this.Button_MouseHover);
 			// 
-			// Button_InstallPathNext
+			// Button_Start
 			// 
-			this.Button_InstallPathNext.Enabled = false;
-			this.Button_InstallPathNext.Location = new System.Drawing.Point(412, 432);
-			this.Button_InstallPathNext.Margin = new System.Windows.Forms.Padding(4);
-			this.Button_InstallPathNext.Name = "Button_InstallPathNext";
-			this.Button_InstallPathNext.Size = new System.Drawing.Size(64, 24);
-			this.Button_InstallPathNext.TabIndex = 13;
-			this.Button_InstallPathNext.Text = "Next >";
-			this.Button_InstallPathNext.UseVisualStyleBackColor = true;
-			this.Button_InstallPathNext.Click += new System.EventHandler(this.Button_InstallPathNext_Click);
+			this.Button_Start.Enabled = false;
+			this.Button_Start.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(152)))), ((int)(((byte)(152)))));
+			this.Button_Start.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Button_Start.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Button_Start.Location = new System.Drawing.Point(216, 272);
+			this.Button_Start.Margin = new System.Windows.Forms.Padding(4);
+			this.Button_Start.Name = "Button_Start";
+			this.Button_Start.Size = new System.Drawing.Size(80, 30);
+			this.Button_Start.TabIndex = 9;
+			this.Button_Start.Text = "Start";
+			this.Button_Start.UseVisualStyleBackColor = false;
+			this.Button_Start.Click += new System.EventHandler(this.Button_Start_Click);
+			this.Button_Start.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+			this.Button_Start.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+			this.Button_Start.MouseHover += new System.EventHandler(this.Button_MouseHover);
 			// 
 			// RadioButton_OperationCreate
 			// 
@@ -97,7 +109,6 @@
 			this.RadioButton_OperationCreate.Name = "RadioButton_OperationCreate";
 			this.RadioButton_OperationCreate.Size = new System.Drawing.Size(165, 21);
 			this.RadioButton_OperationCreate.TabIndex = 4;
-			this.RadioButton_OperationCreate.TabStop = true;
 			this.RadioButton_OperationCreate.Tag = "Create";
 			this.RadioButton_OperationCreate.Text = "Create a new translation";
 			this.RadioButton_OperationCreate.UseVisualStyleBackColor = true;
@@ -109,6 +120,7 @@
 			this.GroupBox_ActionRadioButtons.Controls.Add(this.RadioButton_OperationCreate);
 			this.GroupBox_ActionRadioButtons.Enabled = false;
 			this.GroupBox_ActionRadioButtons.Location = new System.Drawing.Point(16, 92);
+			this.GroupBox_ActionRadioButtons.Margin = new System.Windows.Forms.Padding(4);
 			this.GroupBox_ActionRadioButtons.Name = "GroupBox_ActionRadioButtons";
 			this.GroupBox_ActionRadioButtons.Size = new System.Drawing.Size(464, 80);
 			this.GroupBox_ActionRadioButtons.TabIndex = 3;
@@ -124,7 +136,6 @@
 			this.RadioButton_OperationEdit.Name = "RadioButton_OperationEdit";
 			this.RadioButton_OperationEdit.Size = new System.Drawing.Size(175, 21);
 			this.RadioButton_OperationEdit.TabIndex = 5;
-			this.RadioButton_OperationEdit.TabStop = true;
 			this.RadioButton_OperationEdit.Tag = "Edit";
 			this.RadioButton_OperationEdit.Text = "Edit an existing translation";
 			this.RadioButton_OperationEdit.UseVisualStyleBackColor = true;
@@ -132,12 +143,21 @@
 			// 
 			// ComboBox_Language
 			// 
+			this.ComboBox_Language.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+			this.ComboBox_Language.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+			this.ComboBox_Language.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(245)))));
+			this.ComboBox_Language.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.ComboBox_Language.DropDownHeight = 100;
+			this.ComboBox_Language.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.ComboBox_Language.Enabled = false;
+			this.ComboBox_Language.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.ComboBox_Language.FormattingEnabled = true;
+			this.ComboBox_Language.IntegralHeight = false;
 			this.ComboBox_Language.Location = new System.Drawing.Point(128, 188);
 			this.ComboBox_Language.Margin = new System.Windows.Forms.Padding(4);
+			this.ComboBox_Language.MaxDropDownItems = 6;
 			this.ComboBox_Language.Name = "ComboBox_Language";
-			this.ComboBox_Language.Size = new System.Drawing.Size(128, 25);
+			this.ComboBox_Language.Size = new System.Drawing.Size(176, 25);
 			this.ComboBox_Language.TabIndex = 7;
 			// 
 			// Label_LanguageComboBox
@@ -150,23 +170,42 @@
 			this.Label_LanguageComboBox.TabIndex = 6;
 			this.Label_LanguageComboBox.Text = "Choose language:";
 			// 
+			// CheckBox_CompareToEN
+			// 
+			this.CheckBox_CompareToEN.AutoSize = true;
+			this.CheckBox_CompareToEN.Checked = true;
+			this.CheckBox_CompareToEN.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.CheckBox_CompareToEN.Enabled = false;
+			this.CheckBox_CompareToEN.Location = new System.Drawing.Point(24, 240);
+			this.CheckBox_CompareToEN.Margin = new System.Windows.Forms.Padding(4);
+			this.CheckBox_CompareToEN.Name = "CheckBox_CompareToEN";
+			this.CheckBox_CompareToEN.Size = new System.Drawing.Size(212, 21);
+			this.CheckBox_CompareToEN.TabIndex = 8;
+			this.CheckBox_CompareToEN.Text = "Compare with English translation";
+			this.CheckBox_CompareToEN.UseVisualStyleBackColor = true;
+			// 
 			// Form_Setup
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.WhiteSmoke;
-			this.ClientSize = new System.Drawing.Size(496, 473);
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
+			this.ClientSize = new System.Drawing.Size(496, 313);
+			this.Controls.Add(this.CheckBox_CompareToEN);
 			this.Controls.Add(this.Label_LanguageComboBox);
 			this.Controls.Add(this.ComboBox_Language);
 			this.Controls.Add(this.GroupBox_ActionRadioButtons);
-			this.Controls.Add(this.Button_InstallPathNext);
+			this.Controls.Add(this.Button_Start);
 			this.Controls.Add(this.Button_InstallPathBrowse);
 			this.Controls.Add(this.Label_InstallPathTextBox);
 			this.Controls.Add(this.TextBox_InstallPath);
 			this.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(4);
+			this.MaximizeBox = false;
+			this.MaximumSize = new System.Drawing.Size(512, 352);
+			this.MinimumSize = new System.Drawing.Size(512, 352);
 			this.Name = "Form_Setup";
+			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Cities Skylines Localizer";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Setup_FormClosed);
@@ -183,12 +222,13 @@
 		private System.Windows.Forms.TextBox TextBox_InstallPath;
 		private System.Windows.Forms.Label Label_InstallPathTextBox;
 		private System.Windows.Forms.Button Button_InstallPathBrowse;
-		private System.Windows.Forms.Button Button_InstallPathNext;
+		private System.Windows.Forms.Button Button_Start;
 		private System.Windows.Forms.RadioButton RadioButton_OperationCreate;
 		private System.Windows.Forms.GroupBox GroupBox_ActionRadioButtons;
 		private System.Windows.Forms.RadioButton RadioButton_OperationEdit;
 		private System.Windows.Forms.ComboBox ComboBox_Language;
 		private System.Windows.Forms.Label Label_LanguageComboBox;
+		private System.Windows.Forms.CheckBox CheckBox_CompareToEN;
 	}
 }
 

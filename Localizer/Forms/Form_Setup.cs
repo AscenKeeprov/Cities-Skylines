@@ -2,6 +2,7 @@
 using Localizer.Forms;
 using Localizer.Utils;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -16,30 +17,31 @@ namespace Localizer
 			InitializeComponent();
 		}
 
-		public Language[] Languages { get; private set; } = new Language[0];
-		public DirectoryInfo LocalesDir { get; private set; } = null;
-		public Operation SelectedOperation { get; private set; } = Operation.None;
+		private Color ColorBackLight => Color.FromArgb(232, 238, 242);
+		private Color ColorDarkEmerald => Color.FromArgb(0, 80, 105);
+		private Color ColorPaleGreyn => Color.FromArgb(150, 152, 152);
+		private Language[] Languages { get; set; } = new Language[0];
+		private DirectoryInfo LocalesDir { get; set; } = null;
 
 		private void Button_InstallPathBrowse_Click(object sender, EventArgs e)
 		{
-			FolderBrowserDialog fbd = new FolderBrowserDialog();
-			fbd.ShowNewFolderButton = false;
+			FolderBrowserDialog fbd = new FolderBrowserDialog { ShowNewFolderButton = false };
 			DialogResult dr = fbd.ShowDialog();
 			if (dr == DialogResult.OK)
 			{
 				try
 				{
-					LocalesDir = new DirectoryInfo($@"{fbd.SelectedPath}\Files\Locale");
+					string localesPath = $@"{fbd.SelectedPath}\Files\Locale";
 					if (!File.Exists($@"{fbd.SelectedPath}\Cities.exe")
-						|| !File.Exists($@"{LocalesDir.FullName}\en.locale"))
+						|| !File.Exists($@"{localesPath}\en.locale"))
 					{
 						MessageBox.Show("Invalid folder!\n\nRequisite Cities: Skylines files are not present.");
 					}
 					else
 					{
 						TextBox_InstallPath.Text = fbd.SelectedPath;
-						GroupBox_ActionRadioButtons.Enabled = true;
-						Logger.Log($"C:S install dir set to: {TextBox_InstallPath.Text}");
+						LocalesDir = new DirectoryInfo(localesPath);
+						Logger.Log($"Locales dir set to: {LocalesDir.FullName}");
 					}
 				}
 				catch (Exception exception)
@@ -49,13 +51,44 @@ namespace Localizer
 			}
 		}
 
-		private void Button_InstallPathNext_Click(object sender, EventArgs e)
+		private void Button_MouseEnter(object sender, EventArgs e)
+		{
+			if (sender is Button button)
+			{
+				button.FlatAppearance.MouseOverBackColor = ColorBackLight;
+				button.FlatAppearance.BorderColor = ColorDarkEmerald;
+				button.ForeColor = ColorDarkEmerald;
+			}
+		}
+
+		private void Button_MouseHover(object sender, EventArgs e)
+		{
+			if (sender is Button button)
+			{
+				button.FlatAppearance.MouseOverBackColor = ColorBackLight;
+				button.FlatAppearance.BorderColor = ColorDarkEmerald;
+				button.ForeColor = ColorDarkEmerald;
+			}
+		}
+
+		private void Button_MouseLeave(object sender, EventArgs e)
+		{
+			if (sender is Button button)
+			{
+				button.FlatAppearance.BorderColor = ColorPaleGreyn;
+				button.ForeColor = SystemColors.ControlText;
+			}
+		}
+
+		private void Button_Start_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				Form_LocaleSelect nextForm = new Form_LocaleSelect(TextBox_InstallPath.Text);
+				Language selectedLanguage = ComboBox_Language.SelectedItem as Language;
+				bool compareToEnglish = CheckBox_CompareToEN.Checked;
+				Form_Translate translateForm = new Form_Translate(LocalesDir, selectedLanguage, compareToEnglish);
 				this.Hide();
-				nextForm.Show();
+				translateForm.Show();
 				this.Close();
 			}
 			catch (Exception exception)
@@ -64,16 +97,16 @@ namespace Localizer
 			}
 		}
 
+		private void Form_Setup_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			if (Application.OpenForms.Count == 0) Application.Exit();
+		}
+
 		private void Form_Setup_Load(object sender, EventArgs e)
 		{
 			Logger.Clear();
 			Logger.Log("Starting application");
 			LoadLanguageData();
-		}
-
-		private void Form_Setup_FormClosed(object sender, FormClosedEventArgs e)
-		{
-			if (Application.OpenForms.Count == 0) Application.Exit();
 		}
 
 		private void LoadLanguageData()
@@ -87,7 +120,7 @@ namespace Localizer
 					PropertyNameCaseInsensitive = true
 				});
 				Array.Sort(Languages);
-				Logger.Log("Language data loaded");
+				Logger.Log("ISO language data loaded");
 			}
 			catch (Exception exception)
 			{
@@ -99,19 +132,24 @@ namespace Localizer
 		{
 			if (sender is RadioButton rb && rb.Checked)
 			{
-				SelectedOperation = (Operation)Enum.Parse(typeof(Operation), rb.Tag.ToString(), true);
 				ComboBox_Language.Enabled = true;
+				Button_Start.Enabled = true;
+				Operation selectedOperation = (Operation)Enum.Parse(typeof(Operation), rb.Tag.ToString(), true);
 				string[] availableLocales = LocalesDir.GetFiles("*.locale")
-						.Select(f => Path.GetFileNameWithoutExtension(f.FullName)).ToArray();
-				switch (SelectedOperation)
+					.Select(f => Path.GetFileNameWithoutExtension(f.FullName)).ToArray();
+				switch (selectedOperation)
 				{
 					case Operation.Create:
 						ComboBox_Language.DataSource = Array.FindAll(Languages,
-						l => Array.IndexOf(availableLocales, l.Code) < 0);
+							l => Array.IndexOf(availableLocales, l.Code) < 0);
+						CheckBox_CompareToEN.Checked = true;
+						CheckBox_CompareToEN.Enabled = false;
 						break;
 					case Operation.Edit:
 						ComboBox_Language.DataSource = Array.FindAll(Languages,
-						l => Array.Exists(availableLocales, al => al == l.Code));
+							l => Array.Exists(availableLocales, al => al == l.Code));
+						CheckBox_CompareToEN.Enabled = true;
+						CheckBox_CompareToEN.Checked = false;
 						break;
 					default:
 						ComboBox_Language.DataSource = Languages;
@@ -122,7 +160,7 @@ namespace Localizer
 
 		private void TextBox_InstallPath_TextChanged(object sender, EventArgs e)
 		{
-			Button_InstallPathNext.Enabled = !string.IsNullOrEmpty(TextBox_InstallPath.Text);
+			GroupBox_ActionRadioButtons.Enabled = true;
 		}
 	}
 }
