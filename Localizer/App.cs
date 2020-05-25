@@ -1,5 +1,4 @@
 ﻿using Localizer.Core;
-using Localizer.Utils;
 using System;
 using System.IO;
 using System.Windows.Forms;

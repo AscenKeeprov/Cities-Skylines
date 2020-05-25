@@ -1,6 +1,6 @@
 ﻿using Localizer.Core;
 using Localizer.Forms;
-using Localizer.Utils;
+using Localizer.Utilities;
 using System;
 using System.Drawing;
 using System.IO;
@@ -22,6 +22,7 @@ namespace Localizer
 		private Color ColorPaleGreyn => Color.FromArgb(150, 152, 152);
 		private Language[] Languages { get; set; } = new Language[0];
 		private DirectoryInfo LocalesDir { get; set; } = null;
+		private Mode TranslateMode { get; set; } = Mode.None;
 
 		private void Button_InstallPathBrowse_Click(object sender, EventArgs e)
 		{
@@ -33,7 +34,7 @@ namespace Localizer
 				{
 					string localesPath = $@"{fbd.SelectedPath}\Files\Locale";
 					if (!File.Exists($@"{fbd.SelectedPath}\Cities.exe")
-						|| !File.Exists($@"{localesPath}\en.locale"))
+						|| !File.Exists($@"{localesPath}\en.{Constants.LocaleFileExtension}"))
 					{
 						MessageBox.Show("Invalid folder!\n\nRequisite Cities: Skylines files are not present.");
 					}
@@ -86,7 +87,7 @@ namespace Localizer
 			{
 				Language selectedLanguage = ComboBox_Language.SelectedItem as Language;
 				bool compareToEnglish = CheckBox_CompareToEN.Checked;
-				Form_Translate translateForm = new Form_Translate(LocalesDir, selectedLanguage, compareToEnglish);
+				Form_Translate translateForm = new Form_Translate(LocalesDir, selectedLanguage, TranslateMode, compareToEnglish);
 				this.Hide();
 				translateForm.Show();
 				this.Close();
@@ -134,18 +135,18 @@ namespace Localizer
 			{
 				ComboBox_Language.Enabled = true;
 				Button_Start.Enabled = true;
-				Operation selectedOperation = (Operation)Enum.Parse(typeof(Operation), rb.Tag.ToString(), true);
-				string[] availableLocales = LocalesDir.GetFiles("*.locale")
+				TranslateMode = (Mode)Enum.Parse(typeof(Mode), rb.Tag.ToString(), true);
+				string[] availableLocales = LocalesDir.GetFiles($"*.{Constants.LocaleFileExtension}")
 					.Select(f => Path.GetFileNameWithoutExtension(f.FullName)).ToArray();
-				switch (selectedOperation)
+				switch (TranslateMode)
 				{
-					case Operation.Create:
+					case Mode.Create:
 						ComboBox_Language.DataSource = Array.FindAll(Languages,
 							l => Array.IndexOf(availableLocales, l.Code) < 0);
 						CheckBox_CompareToEN.Checked = true;
 						CheckBox_CompareToEN.Enabled = false;
 						break;
-					case Operation.Edit:
+					case Mode.Edit:
 						ComboBox_Language.DataSource = Array.FindAll(Languages,
 							l => Array.Exists(availableLocales, al => al == l.Code));
 						CheckBox_CompareToEN.Enabled = true;

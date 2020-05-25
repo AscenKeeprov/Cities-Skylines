@@ -1,6 +1,6 @@
 ﻿namespace Localizer.Core
 {
-	public enum Operation
+	public enum Mode
 	{
 		None = 0,
 		Create = 1,
