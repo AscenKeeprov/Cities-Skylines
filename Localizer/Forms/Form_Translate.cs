@@ -1,6 +1,7 @@
 ﻿using ColossalFramework.Globalization;
 using ColossalFramework.IO;
 using Localizer.Core;
+using Localizer.Services;
 using Localizer.Utilities;
 using System;
 using System.Collections.Generic;
@@ -14,63 +15,81 @@ namespace Localizer.Forms
 {
 	public partial class Form_Translate : Form
 	{
-		public Form_Translate(DirectoryInfo localesDir, Language targetLocale, Mode translateMode, bool compareToEnglish = true)
-		{
-			CompareToEnglish = compareToEnglish && targetLocale.Code != "en";
-			LocalesDir = localesDir;
-			TargetLocale = targetLocale;
-			TranslateMode = translateMode;
-			InitializeComponent();
-		}
-
+		private readonly ILogger _logger;
 		private bool CompareToEnglish { get; }
 		private Dictionary<Locale.Key, string> LocaleDataEN { get; set; }
 		private Dictionary<Locale.Key, string> LocaleDataTarget { get; set; }
 		private DirectoryInfo LocalesDir { get; }
-		private Language TargetLocale { get; }
+		private Language TargetLanguage { get; }
 		private Mode TranslateMode { get; }
+
+		public Form_Translate(DirectoryInfo localesDir, Language targetLanguage, Mode translateMode, ILogger logger, bool compareToEnglish = true)
+		{
+			_logger = logger;
+			CompareToEnglish = compareToEnglish && targetLanguage.Code != "en";
+			LocalesDir = localesDir;
+			TargetLanguage = targetLanguage;
+			TranslateMode = translateMode;
+			InitializeComponent();
+		}
+
+		private void DataGridView_Translation_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			//TODO: HANDLE CELL VALUE CHANGE
+			MessageBox.Show("Handle cell value change!");
+		}
 
 		private void Form_Translate_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			if (Application.OpenForms.Count == 0) Application.Exit();
+			Form_Setup setupForm = Application.OpenForms.OfType<Form_Setup>()
+				.FirstOrDefault() ?? new Form_Setup(_logger);
+			setupForm.Show();
+		}
+
+		private void Form_Translate_FormClosing(object sender, FormClosedEventArgs e)
+		{
+			this.Hide();
 		}
 
 		private void Form_Translate_Load(object sender, EventArgs e)
 		{
-			Logger.Log($"Target locale set to: {TargetLocale}");
+			_logger.Log($"Target locale set to: {TargetLanguage}");
 			try
 			{
 				LocaleDataEN = UnpackLocaleFile($@"{LocalesDir.FullName}\en.{Constants.LocaleFileExtension}");
 				switch (TranslateMode)
 				{
 					case Mode.Edit:
-						LocaleDataTarget = UnpackLocaleFile($@"{LocalesDir.FullName}\{TargetLocale.Code}.{Constants.LocaleFileExtension}");
+						LocaleDataTarget = UnpackLocaleFile($@"{LocalesDir.FullName}\{TargetLanguage.Code}.{Constants.LocaleFileExtension}");
 						break;
 					default:
 						LocaleDataTarget = LocaleDataEN.ToDictionary(kvp => kvp.Key, kvp => string.Empty);
 						break;
 				}
 				DataTable localeDataTable = new DataTable();
-				DataColumn columnID = new DataColumn
+				DataColumn idColumn = new DataColumn
 				{
 					ColumnName = "Identifier",
 					ReadOnly = true
 				};
-				localeDataTable.Columns.Add(columnID);
-				DataColumn columnDescriptionTarget = new DataColumn($"Description [{TargetLocale.Code.ToUpper()}]");
-				localeDataTable.Columns.Add(columnDescriptionTarget);
-				DataColumn columnDescriptionEN = new DataColumn()
+				localeDataTable.Columns.Add(idColumn);
+				DataColumn targetDescriptionColumn = new DataColumn()
 				{
-					ColumnName = "Description [EN]",
+					ColumnName = $"Description - {TargetLanguage.Name} [{TargetLanguage.Code.ToUpper()}]"
+				};
+				localeDataTable.Columns.Add(targetDescriptionColumn);
+				DataColumn enDescriptionColumn = new DataColumn()
+				{
+					ColumnName = "Description - English [EN]",
 					ReadOnly = true
 				};
-				if (CompareToEnglish) localeDataTable.Columns.Add(columnDescriptionEN);
+				if (CompareToEnglish) localeDataTable.Columns.Add(enDescriptionColumn);
 				foreach (KeyValuePair<Locale.Key, string> entry in LocaleDataEN)
 				{
 					DataRow row = localeDataTable.NewRow();
-					row[columnID] = entry.Key.ToString();
-					row[columnDescriptionTarget] = LocaleDataTarget.ContainsKey(entry.Key) ? LocaleDataTarget[entry.Key] : string.Empty;
-					if (CompareToEnglish) row[columnDescriptionEN] = entry.Value;
+					row[idColumn] = entry.Key.ToString();
+					row[targetDescriptionColumn] = LocaleDataTarget.ContainsKey(entry.Key) ? LocaleDataTarget[entry.Key] : string.Empty;
+					if (CompareToEnglish) row[enDescriptionColumn] = entry.Value;
 					localeDataTable.Rows.Add(row);
 					//TODO: DELETE AFTER TESTING
 					//if (localeDataTable.Rows.Count >= 21) break;
@@ -78,23 +97,19 @@ namespace Localizer.Forms
 				DataGridView_Translation.DataSource = localeDataTable;
 				foreach (DataGridViewColumn column in DataGridView_Translation.Columns)
 				{
-					if (column.Name == columnID.ColumnName) column.DefaultCellStyle = new DataGridViewCellStyle()
+					if (column.Name == idColumn.ColumnName) column.DefaultCellStyle = new DataGridViewCellStyle()
 					{
 						BackColor = Color.FromArgb(240, 242, 244)
 					};
 					//TODO: DELETE IF Cities: Skylines CAN LOAD CUSTOM SORTED LOCALES
 					column.SortMode = DataGridViewColumnSortMode.NotSortable;
 				}
-				//DataGridView_Translation.Columns[columnID.ColumnName].DefaultCellStyle = new DataGridViewCellStyle()
-				//{
-				//	BackColor = Color.FromArgb(240, 242, 244)
-				//};
 			}
 			catch (Exception exception)
 			{
-				MessageBox.Show($"An error has occured!\n\nLog file available at {Logger.OutputPath}");
-				Logger.Log(exception.Message);
-				Logger.Log(exception.StackTrace);
+				MessageBox.Show($"An error has occured!\n\nLog file available at {_logger.OutputPath}");
+				_logger.Log(exception.Message);
+				_logger.Log(exception.StackTrace);
 			}
 		}
 		private Dictionary<Locale.Key, string> UnpackLocaleFile(string localePath)

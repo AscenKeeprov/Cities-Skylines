@@ -1,23 +1,28 @@
-﻿using Localizer.Core;
+﻿using Localizer.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Localizer
 {
 	public static class App
 	{
-		public static DirectoryInfo ProjectDirectory => new DirectoryInfo(AppContext.BaseDirectory).Parent.Parent;
-
 		[STAThread]
 		public static void Main()
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Form mainForm = new Form_Setup();
-			mainForm.Show();
-			LocalizerContext appContext = new LocalizerContext();
-			Application.Run(appContext);
+			ServiceCollection services = new ServiceCollection();
+			ConfigureServices(services);
+			using (ServiceProvider serviceProvider = services.BuildServiceProvider())
+			{
+				ILogger logger = serviceProvider.GetRequiredService<ILogger>();
+				AppContext appContext = new AppContext(logger);
+				Application.Run(appContext);
+			}
+		}
+
+		private static void ConfigureServices(ServiceCollection services)
+		{
+			services.AddSingleton<ILogger, Logger>();
 		}
 	}
 }

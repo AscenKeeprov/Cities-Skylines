@@ -49,6 +49,7 @@
 			this.DataGridView_Translation.Name = "DataGridView_Translation";
 			this.DataGridView_Translation.Size = new System.Drawing.Size(1008, 473);
 			this.DataGridView_Translation.TabIndex = 0;
+			this.DataGridView_Translation.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_Translation_CellValueChanged);
 			// 
 			// Form_Translate
 			// 

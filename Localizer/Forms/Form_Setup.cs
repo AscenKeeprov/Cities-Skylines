@@ -1,25 +1,30 @@
 ﻿using Localizer.Core;
 using Localizer.Forms;
-using Localizer.Utilities;
+using Localizer.Services;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Localizer
 {
 	public partial class Form_Setup : Form
 	{
-		public Form_Setup()
+		private readonly ILogger _logger;
+
+		public Form_Setup(ILogger logger)
 		{
+			_logger = logger;
 			InitializeComponent();
 		}
 
 		private Color ColorBackLight => Color.FromArgb(232, 238, 242);
 		private Color ColorDarkEmerald => Color.FromArgb(0, 80, 105);
 		private Color ColorPaleGreyn => Color.FromArgb(150, 152, 152);
+
 		private Language[] Languages { get; set; } = new Language[0];
 		private DirectoryInfo LocalesDir { get; set; } = null;
 		private Mode TranslateMode { get; set; } = Mode.None;
@@ -42,12 +47,12 @@ namespace Localizer
 					{
 						TextBox_InstallPath.Text = fbd.SelectedPath;
 						LocalesDir = new DirectoryInfo(localesPath);
-						Logger.Log($"Locales dir set to: {LocalesDir.FullName}");
+						_logger.Log($"Locales dir set to: {LocalesDir.FullName}");
 					}
 				}
 				catch (Exception exception)
 				{
-					Logger.Log(exception.Message);
+					_logger.Log(exception.Message);
 				}
 			}
 		}
@@ -87,14 +92,13 @@ namespace Localizer
 			{
 				Language selectedLanguage = ComboBox_Language.SelectedItem as Language;
 				bool compareToEnglish = CheckBox_CompareToEN.Checked;
-				Form_Translate translateForm = new Form_Translate(LocalesDir, selectedLanguage, TranslateMode, compareToEnglish);
+				Form_Translate translateForm = new Form_Translate(LocalesDir, selectedLanguage, TranslateMode, _logger, compareToEnglish);
 				this.Hide();
 				translateForm.Show();
-				this.Close();
 			}
 			catch (Exception exception)
 			{
-				Logger.Log(exception.Message);
+				_logger.Log(exception.Message);
 			}
 		}
 
@@ -105,27 +109,33 @@ namespace Localizer
 
 		private void Form_Setup_Load(object sender, EventArgs e)
 		{
-			Logger.Clear();
-			Logger.Log("Starting application");
+			_logger.Clear();
+			_logger.Log("Starting application");
 			LoadLanguageData();
 		}
 
 		private void LoadLanguageData()
 		{
+			//TODO: CLEAN UP
+			//var cultures = CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+			//	.Where(ci => !string.IsNullOrEmpty(ci.Name)
+			//	 && string.IsNullOrEmpty(ci.Parent.Name)
+			//	 && ci.TextInfo.ANSICodePage != 0)
+			//	.ToArray();
 			try
 			{
-				string langJsonPath = Path.Combine(App.ProjectDirectory.FullName, @"Data\iso_639-1_language_codes.json");
-				string langJson = File.ReadAllText(langJsonPath);
-				Languages = JsonSerializer.Deserialize<Language[]>(langJson, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-				Array.Sort(Languages);
-				Logger.Log("ISO language data loaded");
+				Languages = CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+					.Where(ci => !string.IsNullOrEmpty(ci.Name)
+					 && string.IsNullOrEmpty(ci.Parent.Name)
+					 && ci.TextInfo.ANSICodePage != 0)
+					.Select(ci => new Language(ci.TwoLetterISOLanguageName,
+					 Regex.Replace(ci.DisplayName, @"^isi(?=\p{L}+)", string.Empty)))
+					.ToArray();
+				_logger.Log("Language data loaded");
 			}
 			catch (Exception exception)
 			{
-				Logger.Log(exception.Message);
+				_logger.Log(exception.Message);
 			}
 		}
 
@@ -137,7 +147,7 @@ namespace Localizer
 				Button_Start.Enabled = true;
 				TranslateMode = (Mode)Enum.Parse(typeof(Mode), rb.Tag.ToString(), true);
 				string[] availableLocales = LocalesDir.GetFiles($"*.{Constants.LocaleFileExtension}")
-					.Select(f => Path.GetFileNameWithoutExtension(f.FullName)).ToArray();
+					.Select(fi => Path.GetFileNameWithoutExtension(fi.FullName)).ToArray();
 				switch (TranslateMode)
 				{
 					case Mode.Create:
